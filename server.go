@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -22,5 +23,5 @@ func initServer() {
 
 	createRoutes(r)
 
-	http.ListenAndServe(":3000", r)
+	http.ListenAndServe(":"+os.Getenv("SERVER_PORT"), r)
 }
