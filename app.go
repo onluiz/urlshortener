@@ -8,6 +8,7 @@ func main() {
 	app := fx.New(
 		fx.Provide(
 			NewLogger,
+			NewDB,
 			NewServer,
 		),
 		fx.Invoke(InitEnv),
