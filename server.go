@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -13,7 +12,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func NewServer(lc fx.Lifecycle, logger *log.Logger) chi.Router {
+func NewServer(lc fx.Lifecycle, logger *log.Logger, globals *Globals) chi.Router {
 	var r chi.Router = chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
@@ -26,7 +25,7 @@ func NewServer(lc fx.Lifecycle, logger *log.Logger) chi.Router {
 	lc.Append(fx.Hook{
 		OnStart: func(context.Context) error {
 			logger.Print("Starting HTTP server.")
-			go http.ListenAndServe(":"+os.Getenv("SERVER_PORT"), r)
+			go http.ListenAndServe(":"+globals.ServerPort, r)
 			return nil
 		},
 	})

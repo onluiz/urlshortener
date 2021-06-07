@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"os"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -10,9 +9,8 @@ import (
 	"go.uber.org/fx"
 )
 
-func NewDB(lc fx.Lifecycle, logger *log.Logger) *sqlx.DB {
-	dbUri := os.Getenv("DB_USER") + ":" + os.Getenv("DB_PASSWORD") + "@(" + os.Getenv("DB_HOST") + ":" + os.Getenv("DB_PORT") + ")/" + os.Getenv("DB_SCHEMA")
-	db, err := sqlx.Connect("mysql", dbUri)
+func NewDB(lc fx.Lifecycle, logger *log.Logger, globals *Globals) *sqlx.DB {
+	db, err := sqlx.Connect("mysql", globals.DBUri)
 	if err != nil {
 		logger.Fatalln(err)
 		panic(err)
