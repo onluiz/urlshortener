@@ -16,6 +16,7 @@ type Globals struct {
 	DBPort     string
 	DBSchema   string
 	DBUri      string
+	DBDriver   string
 
 	ServerHost    string
 	ServerPort    string
@@ -38,6 +39,7 @@ func NewEnv(logger *log.Logger) *Globals {
 	globals.DBPort = os.Getenv("DB_PORT")
 	globals.DBSchema = os.Getenv("DB_SCHEMA")
 	globals.DBUri = os.Getenv("DB_USER") + ":" + os.Getenv("DB_PASSWORD") + "@(" + os.Getenv("DB_HOST") + ":" + os.Getenv("DB_PORT") + ")/" + os.Getenv("DB_SCHEMA")
+	globals.DBDriver = os.Getenv("DB_DRIVER")
 
 	globals.ServerHost = os.Getenv("SERVER_HOST")
 	globals.ServerPort = os.Getenv("SERVER_PORT")

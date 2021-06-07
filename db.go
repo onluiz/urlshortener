@@ -10,7 +10,7 @@ import (
 )
 
 func NewDB(lc fx.Lifecycle, logger *log.Logger, globals *Globals) *sqlx.DB {
-	db, err := sqlx.Connect("mysql", globals.DBUri)
+	db, err := sqlx.Connect(globals.DBDriver, globals.DBUri)
 	if err != nil {
 		logger.Fatalln(err)
 		panic(err)
