@@ -5,13 +5,14 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
+	"github.com/jmoiron/sqlx"
 )
 
 type ShortenURLPayload struct {
 	LongURL string `json:"longURL"`
 }
 
-func RegisterRoutes(r chi.Router) {
+func RegisterRoutes(r chi.Router, urlService *URLService, db *sqlx.DB) {
 	r.Get("/", func(rw http.ResponseWriter, r *http.Request) {
 		rw.Write([]byte("You are at home"))
 	})
@@ -26,7 +27,7 @@ func RegisterRoutes(r chi.Router) {
 		if err != nil {
 			panic(err)
 		}
-		shortenedURL, error := shortenURL(data.LongURL)
+		shortenedURL, error := urlService.ShortenURL(data.LongURL)
 		if error != nil {
 			panic(err)
 		}
@@ -36,7 +37,7 @@ func RegisterRoutes(r chi.Router) {
 
 	r.Get("/{code}", func(rw http.ResponseWriter, r *http.Request) {
 		if code := chi.URLParam(r, "code"); code != "" {
-			rw.Write([]byte(getURLByCode(code)))
+			rw.Write([]byte(urlService.GetURLByCode(code)))
 		} else {
 			rw.Write([]byte("Your code is not valid"))
 		}

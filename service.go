@@ -2,25 +2,50 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/url"
+	"time"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/teris-io/shortid"
 )
 
+var db *sqlx.DB
+
+type URLService struct {
+	ShortenURL   func(longURL string) (string, error)
+	GetURLByCode func(code string) string
+}
+
+func NewURLService(loggerInstance *log.Logger, dbInstance *sqlx.DB) *URLService {
+	urlService := new(URLService)
+	urlService.ShortenURL = shortenURL
+	urlService.GetURLByCode = getURLByCode
+	db = dbInstance
+	return urlService
+}
+
 func shortenURL(longURL string) (string, error) {
+	// needs better url validator here
 	u, err := url.ParseRequestURI(longURL)
 	if err != nil {
-		return "", err
+		panic(err)
 	}
 
 	fmt.Println(u.String())
 
-	id, err := shortid.Generate()
+	code, err := shortid.Generate()
 	if err != nil {
-		return "", err
+		panic(err)
 	}
-
-	return id, nil
+	db.MustExec(
+		"INSERT INTO url (original, short, code, created_at) VALUES (?, ?, ?, ?)",
+		u.String(),
+		u.String(),
+		code,
+		time.Now(),
+	)
+	return code, nil
 }
 
 func getURLByCode(code string) string {

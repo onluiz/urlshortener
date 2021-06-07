@@ -9,6 +9,7 @@ func main() {
 		fx.Provide(
 			NewLogger,
 			NewDB,
+			NewURLService,
 			NewServer,
 		),
 		fx.Invoke(InitEnv),

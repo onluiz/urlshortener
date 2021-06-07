@@ -15,6 +15,12 @@ func NewDB(lc fx.Lifecycle, logger *log.Logger) *sqlx.DB {
 	db, err := sqlx.Connect("mysql", dbUri)
 	if err != nil {
 		logger.Fatalln(err)
+		panic(err)
+	}
+
+	err = db.Ping()
+	if err != nil {
+		panic(err)
 	}
 
 	logger.Println("Database connected")
