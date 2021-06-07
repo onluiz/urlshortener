@@ -14,7 +14,15 @@ var db *sqlx.DB
 
 type URLService struct {
 	ShortenURL   func(longURL string) (string, error)
-	GetURLByCode func(code string) string
+	GetURLByCode func(code string) (string, error)
+}
+
+type URL struct {
+	Id        string  `db:"id"`
+	Original  string  `db:"original"`
+	Short     string  `db:"short"`
+	Code      string  `db:"code"`
+	CreatedAt []uint8 `db:"created_at"`
 }
 
 func NewURLService(loggerInstance *log.Logger, dbInstance *sqlx.DB) *URLService {
@@ -26,7 +34,6 @@ func NewURLService(loggerInstance *log.Logger, dbInstance *sqlx.DB) *URLService 
 }
 
 func shortenURL(longURL string) (string, error) {
-	// needs better url validator here
 	u, err := url.ParseRequestURI(longURL)
 	if err != nil {
 		panic(err)
@@ -48,6 +55,8 @@ func shortenURL(longURL string) (string, error) {
 	return code, nil
 }
 
-func getURLByCode(code string) string {
-	return "GetURLByCode"
+func getURLByCode(code string) (string, error) {
+	url := URL{}
+	err := db.Get(&url, "SELECT * FROM url url WHERE code=?", code)
+	return url.Original, err
 }

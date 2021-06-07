@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -12,7 +13,7 @@ type ShortenURLPayload struct {
 	LongURL string `json:"longURL"`
 }
 
-func RegisterRoutes(r chi.Router, urlService *URLService, db *sqlx.DB) {
+func RegisterRoutes(r chi.Router, urlService *URLService, db *sqlx.DB, logger *log.Logger) {
 	r.Get("/", func(rw http.ResponseWriter, r *http.Request) {
 		rw.Write([]byte("You are at home"))
 	})
@@ -37,8 +38,14 @@ func RegisterRoutes(r chi.Router, urlService *URLService, db *sqlx.DB) {
 
 	r.Get("/{code}", func(rw http.ResponseWriter, r *http.Request) {
 		if code := chi.URLParam(r, "code"); code != "" {
-			rw.Write([]byte(urlService.GetURLByCode(code)))
+			url, err := urlService.GetURLByCode(code)
+			if err != nil {
+				rw.Write([]byte("url not found"))
+			} else {
+				http.Redirect(rw, r, url, http.StatusMovedPermanently)
+			}
 		} else {
+			logger.Panic("Code " + code + "is not valid")
 			rw.Write([]byte("Your code is not valid"))
 		}
 	})
