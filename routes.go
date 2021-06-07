@@ -11,7 +11,7 @@ type ShortenURLPayload struct {
 	LongURL string `json:"longURL"`
 }
 
-func createRoutes(r chi.Router) {
+func RegisterRoutes(r chi.Router) {
 	r.Get("/", func(rw http.ResponseWriter, r *http.Request) {
 		rw.Write([]byte("You are at home"))
 	})
